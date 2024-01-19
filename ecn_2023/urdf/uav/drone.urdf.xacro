@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="drone">
+
+  <xacro:arg name="id" default="1"/>
+  
+  <!-- properties -->
+  <xacro:property name="id" value="$(arg id)"/>
+  <xacro:property name="frame_radius" value="1"/>
+  <xacro:property name="frame_height" value="0.5"/>
+  <xacro:property name="frame_mass" value="8.8"/>
+  <xacro:property name="arm_radius" value="0.1"/>
+  <xacro:property name="arm_length" value="1.5"/>
+  <xacro:property name="propeller_radius" value="1."/>
+  <xacro:property name="propeller_height" value="0.1"/>
+  <xacro:property name="propeller_height_offset" value="0.25"/>
+  
+  <xacro:macro name="arm" params="i">
+    <link name="uav$(arg id)/arm${i}">
+      <visual>
+        <origin xyz="${cos((i-1)*pi/2+pi/4)*(frame_radius+arm_length/2)} ${sin((i-1)*pi/2+pi/4)*(frame_radius+arm_length/2)} ${frame_height/2-arm_radius}" rpy="0 ${pi/2} ${(i-1)*pi/2+pi/4}"/>
+        <geometry>
+          <cylinder radius="${arm_radius}" length="${arm_length}"/>
+        </geometry>
+        <material name="arm_material"/>
+      </visual>
+    </link>
+    
+    <joint name="frame_arm${i}" type="fixed">
+      <parent link="uav$(arg id)/base_link"/>
+      <child link="uav$(arg id)/arm${i}"/>
+    </joint>
+  </xacro:macro>
+  
+  <xacro:macro name="propeller" params="i mat">
+    <link name="uav$(arg id)/propeller${i}">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${propeller_radius}" length="${propeller_height}"/>
+        </geometry>
+        <material name="propeller_material"/>
+      </visual>
+    </link>
+    
+    <joint name="arm${i}_propeller" type="fixed">
+      <parent link="uav$(arg id)/arm${i}"/>
+      <child link="uav$(arg id)/propeller${i}"/>
+      <origin xyz="${cos((i-1)*pi/2+pi/4)*(frame_radius+arm_length)} ${sin((i-1)*pi/2+pi/4)*(frame_radius+arm_length)} ${frame_height/2-arm_radius+propeller_height_offset}"/>
+    </joint>
+  </xacro:macro>
+  
+  <!-- materials-->
+  <material name="frame_material">
+    <xacro:if value="${id == 1}">
+      <color rgba="1 0 0 1"/>
+    </xacro:if>
+      <xacro:if value="${id == 2}">
+      <color rgba="0 1 0 1"/>
+    </xacro:if>
+        <xacro:if value="${id == 3}">
+      <color rgba="0 0 1 1"/>
+    </xacro:if>
+        <xacro:if value="${id == 4}">
+      <color rgba="1 1 0 1"/>
+    </xacro:if>
+  </material>
+  
+  <material name="arm_material">
+    <color rgba="0.8 0.8 0.8 1"/>
+  </material>
+  
+  <material name="propeller_material">
+    <color rgba="0 0 0 0.6"/>
+  </material>
+
+  <!-- links -->
+  <link name="uav$(arg id)/base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${frame_radius}" length="${frame_height}"/>
+      </geometry>
+      <material name="frame_material">
+        <color rgba="0.8 0.8 0.8 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <xacro:arm i="1"/>
+  <xacro:arm i="2"/>
+  <xacro:arm i="3"/>
+  <xacro:arm i="4"/>
+  
+  <xacro:propeller i="1" mat="Gazebo/RedTransparent"/>
+  <xacro:propeller i="2" mat="Gazebo/BlackTransparent"/>
+  <xacro:propeller i="3" mat="Gazebo/BlueTransparent"/>
+  <xacro:propeller i="4" mat="Gazebo/BlueTransparent"/>
+  
+</robot>
