@@ -65,7 +65,7 @@ public:
 
   void resolve(const std::string& uav_name, Target::Response& response)
   {
-    RCLCPP_WARN(get_logger(), "Got request for %s", uav_name.c_str());
+    //RCLCPP_WARN(get_logger(), "Got request for %s", uav_name.c_str());
 
 
     const auto usv{getTF(uav_name + "/target")};
