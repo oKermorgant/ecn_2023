@@ -49,29 +49,33 @@ The nodes should be run in the namespaces \okt{uav1} $\hdots$ \okt{uav4}.
 
 \section{Static transform broadcaster}
 
-The target position of a given UAV is defined with regards to the USV base frame. Such a transformation should be published on \okt{/tf} through a Static transform broadcaster:
-\begin{bashcodelarge}
- ros2 run tf2_ros static_transform_publisher
-\end{bashcodelarge}
-This node takes the following arguments, assuming we set the desired pose for UAV 1:
-\begin{itemize}
- \item \okt{--frame-id}: name of the parent frame (\okt{usv/base_link})
- \item \okt{--child-frame-id}: name of the child frame (\okt{uav1/target})
- \item \okt{--x}: X-offset of the pose
- \item \okt{--y}: Y-offset of the pose
- \item \okt{--z}: Z-offset of the pose (15)
-\end{itemize}
-
-The X and Y offsets should be set depending on the UAV number:
+The target position of a given UAV is defined with regards to the USV base frame. Such a transformation should be published on \okt{/tf} through a Static transform broadcaster. The X and Y offsets should be set depending on the UAV number:
  \begin{table}[h]\centering
-  \begin{tabular}{|c|c|c|}\hline
-   Drone & X-offset & Y-offset \\\hline
-   1 & 10 & 0 \\\hline
-   2& 0 &10 \\\hline
-   3 & -10 & 0 \\\hline
-   4 & 0 & -10 \\\hline
+  \begin{tabular}{|c|c|c|c|}\hline
+   Drone & X-offset & Y-offset & child frame \\\hline
+   1 & 10 & 0 & \okt{uav1/target}\\\hline
+   2& 0 &10 &\okt{uav2/target}\\\hline
+   3 & -10 & 0 &\okt{uav3/target}\\\hline
+   4 & 0 & -10 &\okt{uav4/target}\\\hline
   \end{tabular}
  \end{table}
+
+ The usv base frame is \okt{usv/base_link}. The Z-offsets are always 15.
+
+
+\paragraph{On ROS 2 Foxy}
+
+The node takes 6 + 2 arguments, unused values should be set to 0:
+\begin{bashcodelarge}
+ ros2 run tf2_ros static_transform_publisher x y z roll pitch yaw frame child_frame
+\end{bashcodelarge}
+
+\paragraph{On ROS 2 Humble+} The node takes keyword-based arguments:
+
+\begin{bashcodelarge}
+ ros2 run tf2_ros static_transform_publisher --x x --y y --z z
+            --frame-id frame --child-frame-id child_frame
+\end{bashcodelarge}
 
  You can run first this static transform publisher in a console for drone 1, to help coding the control node.
 
